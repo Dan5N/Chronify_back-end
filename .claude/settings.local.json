@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//mnt/d/Codefield/**)",
+      "Bash(tree -d -L 3)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
