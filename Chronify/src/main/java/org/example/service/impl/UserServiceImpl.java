@@ -42,4 +42,9 @@ public class UserServiceImpl implements UserService {
     public User getUserInfo(Long userId) {
         return userMapper.findById(userId);
     }
+
+    @Override
+    public void updateProfile(User user) {
+        userMapper.updateProfile(user);
+    }
 }
