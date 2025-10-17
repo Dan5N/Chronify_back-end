@@ -20,7 +20,7 @@ public class NoteController {
 
     @GetMapping
     public Result list() {
-        log.info("查询笔记列表");
+        log.info("Query note list");
 
         Long userId = CurrentUserUtil.getCurrentUserId();
 
@@ -30,47 +30,47 @@ public class NoteController {
 
     @PostMapping
     public Result add(@RequestBody Note note) {
-        log.info("添加笔记: {}", note);
+        log.info("Add note: {}", note);
 
         Long userId = CurrentUserUtil.getCurrentUserId();
         note.setUserId(userId);
 
         noteService.add(note);
-        return Result.success("添加成功");
+        return Result.success("Add successful");
     }
 
     @GetMapping("/{id}")
     public Result getById(@PathVariable Long id) {
-        log.info("查询笔记详情，ID: {}", id);
+        log.info("Query note details, ID: {}", id);
 
         Long userId = CurrentUserUtil.getCurrentUserId();
 
         Note note = noteService.getById(id, userId);
         if (note == null) {
-            return Result.error("笔记不存在");
+            return Result.error("Note not found");
         }
         return Result.success(note);
     }
 
     @PutMapping("/{id}")
     public Result update(@PathVariable Long id, @RequestBody Note note) {
-        log.info("更新笔记，ID: {}, 数据: {}", id, note);
+        log.info("Update note, ID: {}, data: {}", id, note);
 
         Long userId = CurrentUserUtil.getCurrentUserId();
         note.setId(id);
         note.setUserId(userId);
 
         noteService.update(note);
-        return Result.success("更新成功");
+        return Result.success("Update successful");
     }
 
     @DeleteMapping("/{id}")
     public Result delete(@PathVariable Long id) {
-        log.info("删除笔记，ID: {}", id);
+        log.info("Delete note, ID: {}", id);
 
         Long userId = CurrentUserUtil.getCurrentUserId();
 
         noteService.delete(id, userId);
-        return Result.success("删除成功");
+        return Result.success("Delete successful");
     }
 }

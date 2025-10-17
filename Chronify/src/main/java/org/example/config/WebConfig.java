@@ -15,10 +15,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(tokenInterceptor)
-                .addPathPatterns("/api/v1/**")  // 拦截所有api/v1下的请求
+                .addPathPatterns("/api/v1/**")  // Intercept all requests under api/v1
                 .excludePathPatterns(
-                        "/api/v1/auth/login",      // 排除登录
-                        "/api/v1/auth/register"     // 排除注册
+                        "/api/v1/auth/login",      // Exclude login
+                        "/api/v1/auth/register"     // Exclude registration
                 );
     }
 }

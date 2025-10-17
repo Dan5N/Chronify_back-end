@@ -8,10 +8,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * Token认证拦截器
+ * Token Authentication Interceptor
  *
- * 拦截需要认证的API请求，验证JWT Token的有效性
- * 解析用户信息并存入请求属性中供后续使用
+ * Intercepts API requests that require authentication, validates JWT Token validity
+ * Parses user information and stores it in request attributes for subsequent use
  *
  * @author Chronify
  * @since 1.0.0
@@ -20,46 +20,46 @@ import jakarta.servlet.http.HttpServletResponse;
 public class TokenInterceptor implements HandlerInterceptor {
 
     /**
-     * 在请求处理之前进行拦截验证
+     * Intercept and validate before request processing
      *
-     * @param request  HTTP请求对象
-     * @param response HTTP响应对象
-     * @param handler  处理器对象
-     * @return true-继续处理，false-中断处理
-     * @throws Exception 处理异常
+     * @param request  HTTP request object
+     * @param response HTTP response object
+     * @param handler  Handler object
+     * @return true-continue processing, false-interrupt processing
+     * @throws Exception Processing exception
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // 处理OPTIONS请求（CORS预检请求）
-        // OPTIONS请求不需要进行Token验证
+        // Handle OPTIONS requests (CORS preflight requests)
+        // OPTIONS requests do not require Token validation
         if ("OPTIONS".equals(request.getMethod())) {
             return true;
         }
 
-        // 从请求头中获取Token
+        // Get Token from request header
         String token = getTokenFromRequest(request);
 
-        // 检查Token是否存在
+        // Check if Token exists
         if (token == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write("{\"code\":0,\"msg\":\"未提供认证token\"}");
+            response.getWriter().write("{\"code\":0,\"msg\":\"Authentication token not provided\"}");
             return false;
         }
 
-        // 验证Token有效性
+        // Validate Token validity
         if (!JwtUtil.validateToken(token)) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json;charset=UTF-8");
-            response.getWriter().write("{\"code\":0,\"msg\":\"token无效或已过期\"}");
+            response.getWriter().write("{\"code\":0,\"msg\":\"Token is invalid or expired\"}");
             return false;
         }
 
-        // 解析Token中的用户信息
+        // Parse user information from Token
         Long userId = JwtUtil.getUserIdFromToken(token);
         String username = JwtUtil.getUsernameFromToken(token);
 
-        // 将用户信息存入request attribute，方便后续Controller获取
+        // Store user information in request attribute for easy access by subsequent Controllers
         request.setAttribute("userId", userId);
         request.setAttribute("username", username);
 
@@ -67,16 +67,16 @@ public class TokenInterceptor implements HandlerInterceptor {
     }
 
     /**
-     * 从HTTP请求中提取JWT Token
+     * Extract JWT Token from HTTP request
      *
-     * @param request HTTP请求对象
-     * @return JWT Token字符串，如果不存在则返回null
+     * @param request HTTP request object
+     * @return JWT Token string, returns null if not exists
      */
     private String getTokenFromRequest(HttpServletRequest request) {
-        // 从Authorization请求头中获取Bearer Token
+        // Get Bearer Token from Authorization request header
         String bearerToken = request.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-            // 移除"Bearer "前缀，只保留Token部分
+            // Remove "Bearer " prefix, keep only Token part
             return bearerToken.substring(7);
         }
         return null;

@@ -11,19 +11,19 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public Result handleException(Exception e) {
-        log.error("系统异常", e);
-        return Result.error("系统异常，请联系管理员");
+        log.error("System exception", e);
+        return Result.error("System exception, please contact administrator");
     }
 
     @ExceptionHandler(RuntimeException.class)
     public Result handleRuntimeException(RuntimeException e) {
-        log.error("运行时异常", e);
+        log.error("Runtime exception", e);
         return Result.error(e.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public Result handleIllegalArgumentException(IllegalArgumentException e) {
-        log.warn("参数错误: {}", e.getMessage());
-        return Result.error("参数错误: " + e.getMessage());
+        log.warn("Parameter error: {}", e.getMessage());
+        return Result.error("Parameter error: " + e.getMessage());
     }
 }

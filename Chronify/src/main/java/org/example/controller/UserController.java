@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 用户信息控制器
+ * User Information Controller
  *
- * 处理用户信息查询和更新等请求
- * 需要Token认证
+ * Handles user information query and update requests
+ * Requires Token authentication
  *
  * @author Chronify
  * @since 1.0.0
@@ -23,41 +23,41 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
 
     /**
-     * 用户服务层
+     * User service layer
      */
     @Autowired
     private UserService userService;
 
     /**
-     * 获取当前用户信息
+     * Get current user information
      *
-     * @return 用户信息
+     * @return User information
      */
     @GetMapping("/profile")
     public Result getProfile() {
-        log.info("获取用户信息");
+        log.info("Get user information");
 
-        // 从当前请求中获取用户ID
+        // Get user ID from current request
         Long userId = CurrentUserUtil.getCurrentUserId();
         User user = userService.getUserInfo(userId);
         return Result.success(user);
     }
 
     /**
-     * 更新用户信息
+     * Update user information
      *
-     * @param user 待更新的用户信息
-     * @return 更新结果
+     * @param user User information to be updated
+     * @return Update result
      */
     @PutMapping("/profile")
     public Result updateProfile(@RequestBody User user) {
-        log.info("更新用户信息: {}", user);
+        log.info("Update user information: {}", user);
 
         Long userId = CurrentUserUtil.getCurrentUserId();
         user.setId(userId);
 
-        // 调用服务层更新用户信息
+        // Call service layer to update user information
         userService.updateProfile(user);
-        return Result.success("更新成功");
+        return Result.success("Update successful");
     }
 }

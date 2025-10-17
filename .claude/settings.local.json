@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Read(//mnt/d/Codefield/**)",
-      "Bash(tree -d -L 3)"
+      "Bash(tree -d -L 3)",
+      "Bash(find:*)",
+      "Bash(for file in ./Chronify/src/main/java/org/example/pojo/*.java)",
+      "Bash(do echo \"Processing: $file\" grep -n \"[\\u4e00-\\u9fff]\" \"$file\")",
+      "Bash(do echo \"Processing: $file\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

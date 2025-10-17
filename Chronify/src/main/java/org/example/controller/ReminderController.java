@@ -20,7 +20,7 @@ public class ReminderController {
 
     @GetMapping("/reminders/active")
     public Result getActiveReminders() {
-        log.info("获取活跃提醒列表");
+        log.info("Get active reminder list");
 
         Long userId = CurrentUserUtil.getCurrentUserId();
 
@@ -30,22 +30,22 @@ public class ReminderController {
 
     @PostMapping("/reminders")
     public Result addReminder(@RequestBody Reminder reminder) {
-        log.info("创建提醒: {}", reminder);
+        log.info("Create reminder: {}", reminder);
 
         Long userId = CurrentUserUtil.getCurrentUserId();
         reminder.setUserId(userId);
 
         reminderService.add(reminder);
-        return Result.success("创建成功");
+        return Result.success("Create successful");
     }
 
     @DeleteMapping("/reminders/{id}")
     public Result deleteReminder(@PathVariable Long id) {
-        log.info("取消提醒，ID: {}", id);
+        log.info("Cancel reminder, ID: {}", id);
 
         Long userId = CurrentUserUtil.getCurrentUserId();
 
         reminderService.delete(id, userId);
-        return Result.success("删除成功");
+        return Result.success("Delete successful");
     }
 }

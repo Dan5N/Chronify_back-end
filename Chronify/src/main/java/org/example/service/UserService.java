@@ -3,9 +3,9 @@ package org.example.service;
 import org.example.pojo.User;
 
 /**
- * 用户服务接口
+ * User Service Interface
  *
- * 定义用户相关的业务逻辑操作
+ * Defines user-related business logic operations
  *
  * @author Chronify
  * @since 1.0.0
@@ -13,34 +13,34 @@ import org.example.pojo.User;
 public interface UserService {
 
     /**
-     * 用户登录
+     * User login
      *
-     * @param username 用户名
-     * @param password 密码
-     * @return 用户信息，登录失败返回null
+     * @param username Username
+     * @param password Password
+     * @return User information, returns null if login fails
      */
     User login(String username, String password);
 
     /**
-     * 用户注册
+     * User registration
      *
-     * @param username 用户名
-     * @param password 密码
+     * @param username Username
+     * @param password Password
      */
     void register(String username, String password);
 
     /**
-     * 获取用户信息
+     * Get user information
      *
-     * @param userId 用户ID
-     * @return 用户信息
+     * @param userId User ID
+     * @return User information
      */
     User getUserInfo(Long userId);
 
     /**
-     * 更新用户信息
+     * Update user information
      *
-     * @param user 待更新的用户信息
+     * @param user User information to be updated
      */
     void updateProfile(User user);
 }

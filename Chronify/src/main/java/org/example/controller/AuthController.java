@@ -12,10 +12,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 用户认证控制器
+ * User Authentication Controller
  *
- * 处理用户登录、注册等认证相关请求
- * 提供JWT Token生成功能
+ * Handles user login, registration and other authentication related requests
+ * Provides JWT Token generation functionality
  *
  * @author Chronify
  * @since 1.0.0
@@ -26,55 +26,55 @@ import java.util.Map;
 public class AuthController {
 
     /**
-     * 用户服务层
+     * User service layer
      */
     @Autowired
     private UserService userService;
 
     /**
-     * 用户登录
+     * User login
      *
-     * @param loginUser 登录用户信息（用户名和密码）
-     * @return 包含token和用户信息的响应结果
+     * @param loginUser Login user information (username and password)
+     * @return Response result containing token and user information
      */
     @PostMapping("/login")
     public Result login(@RequestBody User loginUser) {
-        log.info("用户登录: {}", loginUser.getUsername());
+        log.info("User login: {}", loginUser.getUsername());
 
-        // 调用服务层验证用户登录
+        // Call service layer to verify user login
         User user = userService.login(loginUser.getUsername(), loginUser.getPassword());
         if (user == null) {
-            // 登录失败，用户名或密码错误
-            return Result.error("用户名或密码错误");
+            // Login failed, username or password incorrect
+            return Result.error("Username or password incorrect");
         }
 
-        // 登录成功，生成JWT token
+        // Login successful, generate JWT token
         String token = JwtUtil.generateToken(user.getUsername(), user.getId());
 
-        // 构建返回数据
+        // Build return data
         Map<String, Object> data = new HashMap<>();
         data.put("token", token);      // JWT Token
-        data.put("user", user);        // 用户信息
+        data.put("user", user);        // User information
 
         return Result.success(data);
     }
 
     /**
-     * 用户注册
+     * User registration
      *
-     * @param registerUser 注册用户信息（用户名和密码）
-     * @return 注册结果响应
+     * @param registerUser Registration user information (username and password)
+     * @return Registration result response
      */
     @PostMapping("/register")
     public Result register(@RequestBody User registerUser) {
-        log.info("用户注册: {}", registerUser.getUsername());
+        log.info("User registration: {}", registerUser.getUsername());
 
-        // 参数校验
+        // Parameter validation
         if (registerUser.getUsername() == null || registerUser.getPassword() == null) {
-            return Result.error("用户名和密码不能为空");
+            return Result.error("Username and password cannot be empty");
         }
 
-        // 调用服务层注册用户
+        // Call service layer to register user
         userService.register(registerUser.getUsername(), registerUser.getPassword());
         return Result.success();
     }

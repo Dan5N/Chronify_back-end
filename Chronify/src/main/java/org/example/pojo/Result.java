@@ -4,18 +4,18 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 后端统一返回结果
+ * Backend unified return result
  * {
- *   code: 响应码, 1 成功 , 0 失败
- *   msg: 提示信息
- *   data: 返回的数据
+ *   code: response code, 1 success, 0 failure
+ *   msg: message
+ *   data: returned data
  * }
  */
 @Data
 public class Result {
-    private Integer code; //编码：1成功，0为失败
-    private String msg; //错误信息
-    private Object data; //数据
+    private Integer code; //code: 1 success, 0 failure
+    private String msg; //error message
+    private Object data; //data
 
     public static Result success() {
         Result result = new Result();
