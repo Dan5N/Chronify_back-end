@@ -16,7 +16,7 @@ public class CurrentUserUtil {
                 return (Long) userId;
             }
         }
-        throw new RuntimeException("无法获取当前用户ID");
+        throw new RuntimeException("Unable to get current user ID");
     }
 
     public static String getCurrentUsername() {
@@ -28,6 +28,6 @@ public class CurrentUserUtil {
                 return (String) username;
             }
         }
-        throw new RuntimeException("无法获取当前用户名");
+        throw new RuntimeException("Unable to get current username");
     }
 }

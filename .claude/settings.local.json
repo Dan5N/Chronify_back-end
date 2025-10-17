@@ -7,7 +7,18 @@
       "Bash(for file in ./Chronify/src/main/java/org/example/pojo/*.java)",
       "Bash(do echo \"Processing: $file\" grep -n \"[\\u4e00-\\u9fff]\" \"$file\")",
       "Bash(do echo \"Processing: $file\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(python3:*)",
+      "Bash(mvn clean:*)",
+      "Bash(findstr:*)",
+      "Bash(set)",
+      "Bash(where java)",
+      "Bash(tasklist)",
+      "Bash(netsh advfirewall firewall show rule:*)",
+      "Bash(telnet:*)",
+      "Bash(curl:*)",
+      "Bash(netstat:*)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []

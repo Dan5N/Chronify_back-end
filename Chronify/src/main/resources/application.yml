@@ -12,6 +12,7 @@ mybatis:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
+  type-handlers-package: org.example.typehandler
 
 pagehelper:
   reasonable: true

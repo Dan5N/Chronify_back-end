@@ -7,9 +7,9 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 /**
- * 用户数据访问层接口
+ * User Data Access Layer Interface
  *
- * 定义用户相关的数据库操作
+ * Defines user-related database operations
  *
  * @author Chronify
  * @since 1.0.0
@@ -18,35 +18,35 @@ import org.apache.ibatis.annotations.Update;
 public interface UserMapper {
 
     /**
-     * 根据用户名查询用户
+     * Query user by username
      *
-     * @param username 用户名
-     * @return 用户信息，不存在返回null
+     * @param username Username
+     * @return User information, returns null if not exists
      */
     @Select("SELECT * FROM users WHERE username = #{username} AND deleted_at IS NULL")
     User findByUsername(String username);
 
     /**
-     * 根据用户ID查询用户
+     * Query user by user ID
      *
-     * @param id 用户ID
-     * @return 用户信息，不存在返回null
+     * @param id User ID
+     * @return User information, returns null if not exists
      */
     @Select("SELECT * FROM users WHERE id = #{id} AND deleted_at IS NULL")
     User findById(Long id);
 
     /**
-     * 插入新用户
+     * Insert new user
      *
-     * @param user 用户信息
+     * @param user User information
      */
     @Insert("INSERT INTO users(username, password, nickname, gender, school) VALUES(#{username}, #{password}, #{nickname}, #{gender}, #{school})")
     void insert(User user);
 
     /**
-     * 更新用户信息
+     * Update user information
      *
-     * @param user 用户信息
+     * @param user User information
      */
     @Update("UPDATE users SET nickname = #{nickname}, gender = #{gender}, school = #{school}, " +
             "updated_at = NOW() WHERE id = #{id} AND deleted_at IS NULL")

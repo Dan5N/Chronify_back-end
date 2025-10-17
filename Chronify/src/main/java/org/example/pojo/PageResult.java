@@ -4,10 +4,10 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 分页结果封装
+ * Pagination result wrapper
  */
 @Data
 public class PageResult {
-    private Long total;    // 总记录数
-    private Object rows;   // 当前页数据列表
+    private Long total;    // Total record count
+    private Object rows;   // Current page data list
 }

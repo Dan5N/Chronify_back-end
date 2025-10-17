@@ -1,6 +1,11 @@
 package org.example.pojo;
 
 import lombok.Data;
+import org.apache.ibatis.type.JdbcType;
+import org.example.typehandler.IntegerListTypeHandler;
+import org.apache.ibatis.annotations.Result;
+import org.apache.ibatis.annotations.Results;
+
 import java.util.List;
 
 @Data
