@@ -14,25 +14,37 @@
 
 ## Context Model
 
-The Context Model defines the system boundaries and identifies how the Chronify system interacts with its external environment.
+The Context Model defines the system boundaries and identifies how the Chronify system interacts with its external environment. Represented as a UML Deployment Diagram.
 
 ```mermaid
 graph TB
-    User["👤 Mobile User<br/>Students"]
-    Browser["🌐 Web Browser<br/>Frontend Client"]
-    Chronify["📅 Chronify System<br/>Backend Server"]
-    DB["🗄️ Database<br/>Persistence Layer"]
-    Clock["⏰ System Clock<br/>For Timestamps"]
-
-    User -->|HTTP/REST API| Chronify
-    Browser -->|HTTP/REST API| Chronify
-    Chronify -->|Query/Update| DB
-    Chronify -->|Use Timestamps| Clock
-    DB -->|Return Data| Chronify
-  
-    style Chronify fill:#4A90E2,stroke:#2E5C8A,stroke-width:3px,color:#fff
-    style User fill:#7CB342,stroke:#558B2F,stroke-width:2px,color:#fff
-    style Browser fill:#7CB342,stroke:#558B2F,stroke-width:2px,color:#fff
+    subgraph "External Systems"
+        direction LR
+        MC["Mobile Client<br/>(External Entity)"]
+        WB["Web Browser<br/>(External Entity)"]
+        Clock["System Clock<br/>(External Entity)"]
+    end
+    
+    subgraph "Chronify System"
+        direction TB
+        CS["Chronify Backend<br/>REST API Server"]
+    end
+    
+    subgraph "Data Layer"
+        direction LR
+        DB["MySQL Database<br/>(External Entity)"]
+    end
+    
+    MC -->|HTTP/REST<br/>Login, CRUD, Query| CS
+    WB -->|HTTP/REST<br/>Login, CRUD, Query| CS
+    CS -->|Query/Update/Insert<br/>Database Operations| DB
+    CS -->|Check Time<br/>Timestamps| Clock
+    DB -->|Return Data<br/>Persistence| CS
+    Clock -->|Provide Time<br/>Events| CS
+    
+    style MC fill:#7CB342,stroke:#558B2F,stroke-width:2px,color:#fff
+    style WB fill:#7CB342,stroke:#558B2F,stroke-width:2px,color:#fff
+    style CS fill:#4A90E2,stroke:#2E5C8A,stroke-width:3px,color:#fff
     style DB fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#fff
     style Clock fill:#29B6F6,stroke:#0277BD,stroke-width:2px,color:#fff
 ```
@@ -46,47 +58,101 @@ graph TB
 
 ## Business Process Model
 
-The Business Process Model shows the automated business processes that Chronify will handle, including the workflow and data relationships.
+The Business Process Model shows the automated business processes that Chronify will handle. Represented as a UML Activity Diagram.
 
 ```mermaid
 graph TD
-    Start([User Starts App]) --> Auth{Authenticated?}
-    Auth -->|No| Login[User Login/Register]
-    Login --> ValidateUser[Validate Username & Password]
-    ValidateUser --> GenerateToken[Generate JWT Token]
-    GenerateToken --> Dashboard[User Dashboard]
-    Auth -->|Yes| Dashboard
-  
-    Dashboard --> Choice{User Action}
-  
-    Choice -->|View Schedule| ViewSchedule[Query Schedules by Date]
-    ViewSchedule --> DisplaySchedule[Display Schedule Events]
-    DisplaySchedule --> Dashboard
-  
-    Choice -->|Add Schedule| AddSchedule[Create New Schedule Event]
-    AddSchedule --> SaveToDB[Save to Database]
-    SaveToDB --> Dashboard
-  
-    Choice -->|Manage Courses| ManageCourses[CRUD Course Operations]
-    ManageCourses --> SaveCourse[Save to Database]
-    SaveCourse --> Dashboard
-  
-    Choice -->|Take Notes| TakeNotes[Create/Edit Notes]
-    TakeNotes --> SaveNotes[Save to Database]
-    SaveNotes --> Dashboard
-  
-    Choice -->|Set Reminder| SetReminder[Create Reminder for Event]
-    SetReminder --> SaveReminder[Save to Database]
-    SaveReminder --> Dashboard
-  
-    Dashboard --> Logout{Logout?}
-    Logout -->|Yes| End([End Session])
-    Logout -->|No| Dashboard
-  
-    style Start fill:#90EE90,stroke:#228B22,stroke-width:2px
-    style End fill:#FFB6C6,stroke:#DC143C,stroke-width:2px
-    style Dashboard fill:#87CEEB,stroke:#4682B4,stroke-width:2px
+    Start([Start: User Opens App]) --> CheckAuth{Authenticated?}
+    
+    CheckAuth -->|No| ShowLogin["<b>Activity:</b><br/>Display Login Page"]
+    CheckAuth -->|Yes| ShowDash["<b>Activity:</b><br/>Display Dashboard"]
+    
+    ShowLogin --> GetCreds["<b>Activity:</b><br/>User Input:<br/>Username & Password"]
+    GetCreds --> ValidateCreds["<b>Activity:</b><br/>Validate Credentials"]
+    ValidateCreds --> ValidResult{Credentials<br/>Valid?}
+    ValidResult -->|No| ShowLogin
+    ValidResult -->|Yes| GenToken["<b>Activity:</b><br/>Generate JWT Token"]
+    GenToken --> ShowDash
+    
+    ShowDash --> ShowOptions["<b>Activity:</b><br/>Display User Options"]
+    ShowOptions --> UserChoice{User<br/>Action?}
+    
+    UserChoice -->|View Schedules| ViewSchedule["<b>Activity:</b><br/>Query Schedules<br/>by Date"]
+    ViewSchedule --> DisplaySchedule["<b>Activity:</b><br/>Display Schedule<br/>Events"]
+    DisplaySchedule --> ShowOptions
+    
+    UserChoice -->|Add Schedule| AddSchedule["<b>Activity:</b><br/>Create New<br/>Schedule Event"]
+    AddSchedule --> SaveSchedule["<b>Activity:</b><br/>Validate Input<br/>& Save to DB"]
+    SaveSchedule --> ShowOptions
+    
+    UserChoice -->|Manage Courses| ManageCourse["<b>Activity:</b><br/>CRUD Course<br/>Operations"]
+    ManageCourse --> SaveCourse["<b>Activity:</b><br/>Save to Database"]
+    SaveCourse --> ShowOptions
+    
+    UserChoice -->|Take Notes| TakeNote["<b>Activity:</b><br/>Create/Edit<br/>Notes"]
+    TakeNote --> SaveNote["<b>Activity:</b><br/>Save to Database"]
+    SaveNote --> ShowOptions
+    
+    UserChoice -->|Set Reminder| SetReminder["<b>Activity:</b><br/>Create Reminder<br/>for Event"]
+    SetReminder --> SaveReminder["<b>Activity:</b><br/>Save to Database"]
+    SaveReminder --> ShowOptions
+    
+    UserChoice -->|Manage Profile| ManageProfile["<b>Activity:</b><br/>Update User<br/>Profile"]
+    ManageProfile --> SaveProfile["<b>Activity:</b><br/>Validate & Save<br/>to Database"]
+    SaveProfile --> ShowOptions
+    
+    UserChoice -->|Logout| LogoutAct["<b>Activity:</b><br/>Clear Session"]
+    LogoutAct --> EndSession["<b>Activity:</b><br/>End User Session"]
+    EndSession --> End([End])
+    
+    style Start fill:#90EE90,stroke:#228B22,stroke-width:2px,color:#000
+    style End fill:#FFB6C6,stroke:#DC143C,stroke-width:2px,color:#000
+    style CheckAuth fill:#FFE4B5,stroke:#FF8C00,stroke-width:2px,color:#000
+    style ValidResult fill:#FFE4B5,stroke:#FF8C00,stroke-width:2px,color:#000
+    style UserChoice fill:#FFE4B5,stroke:#FF8C00,stroke-width:2px,color:#000
+    style ShowLogin fill:#87CEEB,stroke:#4682B4,stroke-width:2px,color:#000
+    style ShowDash fill:#87CEEB,stroke:#4682B4,stroke-width:2px,color:#000
+    style ShowOptions fill:#87CEEB,stroke:#4682B4,stroke-width:2px,color:#000
+    style GetCreds fill:#DDA0DD,stroke:#8B008B,stroke-width:2px,color:#000
+    style ValidateCreds fill:#DDA0DD,stroke:#8B008B,stroke-width:2px,color:#000
+    style GenToken fill:#DDA0DD,stroke:#8B008B,stroke-width:2px,color:#000
+    style ViewSchedule fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style DisplaySchedule fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style AddSchedule fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style SaveSchedule fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style ManageCourse fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style SaveCourse fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style TakeNote fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style SaveNote fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style SetReminder fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style SaveReminder fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style ManageProfile fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style SaveProfile fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style LogoutAct fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
+    style EndSession fill:#F0E68C,stroke:#BDB76B,stroke-width:2px,color:#000
 ```
+
+### Business Process Flow
+
+**Main Flow**:
+1. **Start**: User opens application
+2. **Decision**: Check authentication status
+3. **If Not Authenticated**: 
+   - Display login page
+   - Get user credentials (username & password)
+   - Validate credentials
+   - Generate JWT token on success
+4. **Dashboard Display**: Show personalized user dashboard
+5. **User Actions** (can repeat): User can perform one of the following:
+   - View schedules by date
+   - Add/Create/Edit/Delete schedules
+   - Manage courses (CRUD operations)
+   - Take notes (Create/Edit/Delete)
+   - Set reminders for events
+   - Manage user profile
+6. **Save Operations**: Each action validates input and saves to database
+7. **Logout**: User logs out to end session
+8. **End**: Session terminated
 
 ---
 
@@ -661,105 +727,137 @@ classDiagram
 
 ## Data Flow Diagram
 
-### Level 0: System Context
+### Level 0: System Context - UML State Diagram
+
+The following UML State Diagram represents the system context and main data flows:
 
 ```mermaid
-graph LR
-    User["👤 User/Student<br/>(External Entity)"]
-    System["📅 Chronify System<br/>(Process)"]
-    DB["🗄️ Database<br/>(Data Store)"]
-
-    User -->|Request:<br/>Login, Schedules,<br/>Courses, Notes| System
-    System -->|Response:<br/>User Info, Events,<br/>Confirmation| User
-    System -->|Store/Retrieve<br/>Data| DB
-    DB -->|Persistent<br/>Data| System
-  
-    style User fill:#7CB342,stroke:#558B2F,stroke-width:2px,color:#fff
-    style System fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
-    style DB fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#fff
+stateDiagram-v2
+    [*] --> Idle
+    
+    Idle --> AuthenticatingUser: User Login Request
+    
+    AuthenticatingUser --> ValidatingCredentials: Submit Username/Password
+    ValidatingCredentials --> GeneratingToken: Credentials Valid
+    ValidatingCredentials --> AuthError: Credentials Invalid
+    
+    AuthError --> Idle: Clear Error
+    
+    GeneratingToken --> UserActive: Token Generated
+    
+    UserActive --> ViewingData: User Query Request
+    UserActive --> CreatingData: User Create Request
+    UserActive --> UpdatingData: User Update Request
+    UserActive --> DeletingData: User Delete Request
+    UserActive --> UserLogout: User Logout
+    
+    ViewingData --> DatabaseQuery: Fetch from DB
+    DatabaseQuery --> ReturnData: Data Retrieved
+    ReturnData --> UserActive: Display to User
+    
+    CreatingData --> DatabaseInsert: Save to DB
+    DatabaseInsert --> ConfirmCreate: Success
+    ConfirmCreate --> UserActive: Notify User
+    
+    UpdatingData --> DatabaseUpdate: Modify in DB
+    DatabaseUpdate --> ConfirmUpdate: Success
+    ConfirmUpdate --> UserActive: Notify User
+    
+    DeletingData --> DatabaseDelete: Remove from DB
+    DatabaseDelete --> ConfirmDelete: Success
+    ConfirmDelete --> UserActive: Notify User
+    
+    UserLogout --> ClearSession: End Session
+    ClearSession --> Idle: Return to Idle
+    
+    Idle --> [*]
+    
+    note right of DatabaseQuery
+        Data Stores:
+        D1: Users Table
+        D2: Courses Table
+        D3: Schedules Table
+        D4: Notes Table
+        D5: Reminders Table
+    end note
 ```
 
-### Level 1: Main Processes
+### Level 1: Process Decomposition - Data Flow Diagram
 
+The following diagram illustrates the data flow at a decomposed level, showing how data moves between processes and data stores within the system.
 ```mermaid
 graph TB
-    User["👤 User"]
-  
-    subgraph "Chronify System"
-        P1["1.0<br/>User Authentication<br/>& Authorization"]
-        P2["2.0<br/>Profile Management"]
-        P3["3.0<br/>Course Management"]
-        P4["4.0<br/>Schedule Management"]
-        P5["5.0<br/>Note Management"]
-        P6["6.0<br/>Reminder Management"]
+    subgraph "User Management Process (P1)"
+        P1A["Receive Login Request"]
+        P1B["Validate Credentials"]
+        P1C["Generate JWT Token"]
+        P1D["Return Token & User Info"]
     end
-
-    DB["🗄️ Database<br/>D1: Users<br/>D2: Courses<br/>D3: Schedules<br/>D4: Notes<br/>D5: Reminders"]
-  
-    User -->|Credentials| P1
-    P1 -->|Session Token| User
-    P1 -->|Validate User| DB
-  
+    
+    subgraph "CRUD Operations (P2-P6)"
+        P2["Profile Management"]
+        P3["Course Management"]
+        P4["Schedule Management"]
+        P5["Note Management"]
+        P6["Reminder Management"]
+    end
+    
+    subgraph "Database Layer"
+        D1["D1: Users"]
+        D2["D2: Courses"]
+        D3["D3: Schedules"]
+        D4["D4: Notes"]
+        D5["D5: Reminders"]
+    end
+    
+    User["👤 User"]
+    
+    User -->|Login Request| P1A
+    P1A --> P1B
+    P1B --> P1C
+    P1C --> P1D
+    P1D --> User
+    
     User -->|Profile Data| P2
-    P2 -->|Profile Info| User
-    P2 -->|Read/Write| DB
-  
-    User -->|Course Info| P3
-    P3 -->|Course List| User
-    P3 -->|CRUD| DB
-  
-    User -->|Schedule Events| P4
-    P4 -->|Schedule Data| User
-    P4 -->|CRUD| DB
-  
-    User -->|Note Content| P5
-    P5 -->|Notes| User
-    P5 -->|CRUD| DB
-  
-    User -->|Reminder Request| P6
-    P6 -->|Reminder Status| User
-    P6 -->|CRUD| DB
-  
-    style P1 fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
+    P2 -->|Read/Write| D1
+    D1 --> P2
+    P2 --> User
+    
+    User -->|Course Data| P3
+    P3 -->|Read/Write| D2
+    D2 --> P3
+    P3 --> User
+    
+    User -->|Schedule Data| P4
+    P4 -->|Read/Write| D3
+    D3 --> P4
+    P4 --> User
+    
+    User -->|Note Data| P5
+    P5 -->|Read/Write| D4
+    D4 --> P5
+    P5 --> User
+    
+    User -->|Reminder Data| P6
+    P6 -->|Read/Write| D5
+    D5 --> P6
+    P6 --> User
+    
+    style User fill:#7CB342,stroke:#558B2F,stroke-width:2px,color:#fff
+    style P1A fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
+    style P1B fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
+    style P1C fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
+    style P1D fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
     style P2 fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
     style P3 fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
     style P4 fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
     style P5 fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
     style P6 fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
-    style User fill:#7CB342,stroke:#558B2F,stroke-width:2px,color:#fff
-    style DB fill:#AB47BC,stroke:#6A1B9A,stroke-width:2px,color:#fff
-```
-
-### Level 1: Detailed Process - Schedule Management (P4)
-
-```mermaid
-graph LR
-    User["👤 User"]
-  
-    subgraph "Schedule Management Process"
-        P4A["4.1<br/>Receive Schedule<br/>Request"]
-        P4B["4.2<br/>Validate<br/>Input Data"]
-        P4C["4.3<br/>Process<br/>Schedule"]
-        P4D["4.4<br/>Generate<br/>Response"]
-    end
-  
-    DB["🗄️ Database<br/>D3: Schedules"]
-
-    User -->|Schedule Data| P4A
-    P4A -->|Request Data| P4B
-    P4B -->|Valid Data| P4C
-    P4B -->|Invalid Data| P4D
-    P4C -->|CRUD Operations| DB
-    DB -->|Stored Data| P4C
-    P4C -->|Process Result| P4D
-    P4D -->|Response| User
-  
-    style P4A fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
-    style P4B fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
-    style P4C fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
-    style P4D fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
-    style User fill:#7CB342,stroke:#558B2F,stroke-width:2px,color:#fff
-    style DB fill:#AB47BC,stroke:#6A1B9A,stroke-width:2px,color:#fff
+    style D1 fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#fff
+    style D2 fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#fff
+    style D3 fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#fff
+    style D4 fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#fff
+    style D5 fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#fff
 ```
 
 ### Data Storage Definition
@@ -776,7 +874,7 @@ graph LR
 
 ## Architecture Overview
 
-### Layered Architecture
+### Layered Architecture - UML Package Diagram
 
 ```mermaid
 graph TB
@@ -785,111 +883,120 @@ graph TB
         Mobile["📱 Mobile Client"]
     end
   
-    subgraph "API Layer"
-        AC["AuthController"]
-        UC["UserController"]
-        SC["ScheduleController"]
-        CC["CourseController"]
-        NC["NoteController"]
-        RC["ReminderController"]
+    subgraph "API/Controller Layer<br/>(REST Endpoints)"
+        AC["&lt;&lt;controller&gt;&gt;<br/>AuthController"]
+        UC["&lt;&lt;controller&gt;&gt;<br/>UserController"]
+        SC["&lt;&lt;controller&gt;&gt;<br/>ScheduleController"]
+        CC["&lt;&lt;controller&gt;&gt;<br/>CourseController"]
+        NC["&lt;&lt;controller&gt;&gt;<br/>NoteController"]
+        RC["&lt;&lt;controller&gt;&gt;<br/>ReminderController"]
     end
   
-    subgraph "Business Logic Layer"
-        US["UserService"]
-        SS["ScheduleService"]
-        CS["CourseService"]
-        NS["NoteService"]
-        RS["ReminderService"]
+    subgraph "Business Logic Layer<br/>(Services)"
+        US["&lt;&lt;service&gt;&gt;<br/>UserService"]
+        SS["&lt;&lt;service&gt;&gt;<br/>ScheduleService"]
+        CS["&lt;&lt;service&gt;&gt;<br/>CourseService"]
+        NS["&lt;&lt;service&gt;&gt;<br/>NoteService"]
+        RS["&lt;&lt;service&gt;&gt;<br/>ReminderService"]
     end
   
-    subgraph "Data Access Layer"
-        UM["UserMapper"]
-        SM["ScheduleMapper"]
-        CM["CourseMapper"]
-        NM["NoteMapper"]
-        RM["ReminderMapper"]
+    subgraph "Data Access Layer<br/>(Mappers)"
+        UM["&lt;&lt;mapper&gt;&gt;<br/>UserMapper"]
+        SM["&lt;&lt;mapper&gt;&gt;<br/>ScheduleMapper"]
+        CM["&lt;&lt;mapper&gt;&gt;<br/>CourseMapper"]
+        NM["&lt;&lt;mapper&gt;&gt;<br/>NoteMapper"]
+        RM["&lt;&lt;mapper&gt;&gt;<br/>ReminderMapper"]
     end
   
-    subgraph "Infrastructure Layer"
-        DB["🗄️ MySQL Database"]
-        Cache["💾 Cache"]
-        Logger["📝 Logger"]
+    subgraph "Infrastructure Layer<br/>(Persistence & Support)"
+        DB["&lt;&lt;database&gt;&gt;<br/>MySQL Database"]
+        Logger["&lt;&lt;utility&gt;&gt;<br/>Logger"]
     end
 
-    subgraph "Security & Configuration"
-        TI["TokenInterceptor"]
-        EH["GlobalExceptionHandler"]
-        WC["WebConfig"]
-        JU["JwtUtil"]
-        CU["CurrentUserUtil"]
-        TH["IntegerListTypeHandler"]
+    subgraph "Cross-Cutting Concerns<br/>(Security & Configuration)"
+        TI["&lt;&lt;interceptor&gt;&gt;<br/>TokenInterceptor"]
+        EH["&lt;&lt;handler&gt;&gt;<br/>GlobalExceptionHandler"]
+        WC["&lt;&lt;config&gt;&gt;<br/>WebConfig"]
+        JU["&lt;&lt;utility&gt;&gt;<br/>JwtUtil"]
+        CU["&lt;&lt;utility&gt;&gt;<br/>CurrentUserUtil"]
+        TH["&lt;&lt;handler&gt;&gt;<br/>IntegerListTypeHandler"]
     end
 
-    Web --> AC
-    Mobile --> AC
-    Web --> UC
-    Mobile --> UC
+    Web -->|Request/Response| AC
+    Mobile -->|Request/Response| AC
+    Web -->|Request/Response| UC
+    Mobile -->|Request/Response| UC
 
-    TI --> AC
-    TI --> UC
-    TI --> SC
-    TI --> CC
-    TI --> NC
-    TI --> RC
+    TI -.->|intercepts| AC
+    TI -.->|intercepts| UC
+    TI -.->|intercepts| SC
+    TI -.->|intercepts| CC
+    TI -.->|intercepts| NC
+    TI -.->|intercepts| RC
 
-    AC -.->|HTTP| AC
-    UC --> US
-    SC --> SS
-    CC --> CS
-    NC --> NS
-    RC --> RS
+    AC -->|delegates| US
+    UC -->|delegates| US
+    SC -->|delegates| SS
+    CC -->|delegates| CS
+    NC -->|delegates| NS
+    RC -->|delegates| RS
 
-    US --> UM
-    SS --> SM
-    CS --> CM
-    NS --> NM
-    RS --> RM
+    US -->|queries| UM
+    SS -->|queries| SM
+    CS -->|queries| CM
+    NS -->|queries| NM
+    RS -->|queries| RM
 
-    UM --> DB
-    SM --> DB
-    CM --> DB
-    NM --> DB
-    RM --> DB
+    UM -->|CRUD| DB
+    SM -->|CRUD| DB
+    CM -->|CRUD| DB
+    NM -->|CRUD| DB
+    RM -->|CRUD| DB
 
     AC -.->|logs| Logger
-    US -.->|logs| Logger
-    SS -.->|logs| Logger
+    UC -.->|logs| Logger
+    SC -.->|logs| Logger
+    CC -.->|logs| Logger
+    NC -.->|logs| Logger
+    RC -.->|logs| Logger
 
-    US -.->|cache| Cache
-    SS -.->|cache| Cache
-    CS -.->|cache| Cache
-
-    JU --> TI
-    CU --> TI
-    EH --> AC
-    EH --> UC
-    EH --> SC
-    EH --> CC
-    EH --> NC
-    EH --> RC
-    WC --> TI
-    TH --> CM
+    JU -->|token validation| TI
+    CU -->|user context| TI
+    EH -->|error handling| AC
+    EH -->|error handling| UC
+    EH -->|error handling| SC
+    EH -->|error handling| CC
+    EH -->|error handling| NC
+    EH -->|error handling| RC
+    WC -->|configuration| TI
+    TH -->|type mapping| CM
   
-    style Web fill:#7CB342,stroke:#558B2F,stroke-width:2px,color:#fff
-    style Mobile fill:#7CB342,stroke:#558B2F,stroke-width:2px,color:#fff
+    style Web fill:#7CB342,stroke:#558B2F,stroke-width:3px,color:#fff
+    style Mobile fill:#7CB342,stroke:#558B2F,stroke-width:3px,color:#fff
     style AC fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
     style UC fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
     style SC fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
     style CC fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
     style NC fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
     style RC fill:#4A90E2,stroke:#2E5C8A,stroke-width:2px,color:#fff
-    style DB fill:#FF7043,stroke:#E64A19,stroke-width:2px,color:#fff
+    style US fill:#66BB6A,stroke:#2E7D32,stroke-width:2px,color:#fff
+    style SS fill:#66BB6A,stroke:#2E7D32,stroke-width:2px,color:#fff
+    style CS fill:#66BB6A,stroke:#2E7D32,stroke-width:2px,color:#fff
+    style NS fill:#66BB6A,stroke:#2E7D32,stroke-width:2px,color:#fff
+    style RS fill:#66BB6A,stroke:#2E7D32,stroke-width:2px,color:#fff
+    style UM fill:#FFA726,stroke:#E65100,stroke-width:2px,color:#fff
+    style SM fill:#FFA726,stroke:#E65100,stroke-width:2px,color:#fff
+    style CM fill:#FFA726,stroke:#E65100,stroke-width:2px,color:#fff
+    style NM fill:#FFA726,stroke:#E65100,stroke-width:2px,color:#fff
+    style RM fill:#FFA726,stroke:#E65100,stroke-width:2px,color:#fff
+    style DB fill:#FF7043,stroke:#E64A19,stroke-width:3px,color:#fff
     style TI fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px,color:#fff
     style EH fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px,color:#fff
     style WC fill:#F1F8E9,stroke:#689F38,stroke-width:2px,color:#fff
     style JU fill:#FFECB3,stroke:#F57C00,stroke-width:2px,color:#fff
     style CU fill:#E8EAF6,stroke:#3F51B5,stroke-width:2px,color:#fff
     style TH fill:#E0F2F1,stroke:#00796B,stroke-width:2px,color:#fff
+    style Logger fill:#CFD8DC,stroke:#37474F,stroke-width:2px,color:#fff
 ```
 
 ---
