@@ -1,0 +1,549 @@
+openapi: "3.1.0"
+info:
+  title: "Chronify_back_end API"
+  description: "Chronify_back_end API"
+  version: "1.0.0"
+servers:
+  - url: "https://Chronify_back_end"
+paths:
+  /api/v1/auth/login:
+    post:
+      summary: "POST api/v1/auth/login"
+      operationId: "login"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/v1/auth/register:
+    post:
+      summary: "POST api/v1/auth/register"
+      operationId: "register"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/v1/user/profile:
+    get:
+      summary: "GET api/v1/user/profile"
+      operationId: "getProfile"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+    put:
+      summary: "PUT api/v1/user/profile"
+      operationId: "updateProfile"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/v1/schedules:
+    get:
+      summary: "GET api/v1/schedules"
+      operationId: "list"
+      parameters:
+        - name: "date"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+            format: "date"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+    post:
+      summary: "POST api/v1/schedules"
+      operationId: "add"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Schedule"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/v1/schedules/{id}:
+    get:
+      summary: "GET api/v1/schedules/{id}"
+      operationId: "getById"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+    put:
+      summary: "PUT api/v1/schedules/{id}"
+      operationId: "update"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Schedule"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+    delete:
+      summary: "DELETE api/v1/schedules/{id}"
+      operationId: "delete"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/v1/courses:
+    get:
+      summary: "GET api/v1/courses"
+      operationId: "list"
+      parameters:
+        - name: "dayOfWeek"
+          in: "query"
+          required: false
+          schema:
+            type: "integer"
+            format: "int32"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+    post:
+      summary: "POST api/v1/courses"
+      operationId: "add"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Course"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/v1/courses/{id}:
+    get:
+      summary: "GET api/v1/courses/{id}"
+      operationId: "getById"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+    put:
+      summary: "PUT api/v1/courses/{id}"
+      operationId: "update"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Course"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+    delete:
+      summary: "DELETE api/v1/courses/{id}"
+      operationId: "delete"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/v1/notes:
+    get:
+      summary: "GET api/v1/notes"
+      operationId: "list"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+    post:
+      summary: "POST api/v1/notes"
+      operationId: "add"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Note"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/v1/notes/{id}:
+    get:
+      summary: "GET api/v1/notes/{id}"
+      operationId: "getById"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+    put:
+      summary: "PUT api/v1/notes/{id}"
+      operationId: "update"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Note"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+    delete:
+      summary: "DELETE api/v1/notes/{id}"
+      operationId: "delete"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/v1/reminders:
+    post:
+      summary: "POST api/v1/reminders"
+      operationId: "addReminder"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Reminder"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/v1/reminders/active:
+    get:
+      summary: "GET api/v1/reminders/active"
+      operationId: "getActiveReminders"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/v1/reminders/{id}:
+    delete:
+      summary: "DELETE api/v1/reminders/{id}"
+      operationId: "deleteReminder"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int64"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Result"
+components:
+  schemas:
+    User:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        username:
+          type: "string"
+          nullable: true
+        password:
+          type: "string"
+          nullable: true
+        nickname:
+          type: "string"
+          nullable: true
+        avatar:
+          type: "string"
+          nullable: true
+        gender:
+          type: "string"
+          nullable: true
+        school:
+          type: "string"
+          nullable: true
+        createTime:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        updateTime:
+          type: "string"
+          format: "date-time"
+          nullable: true
+    Object:
+      type: "object"
+      properties: { }
+    Result:
+      type: "object"
+      properties:
+        code:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        msg:
+          type: "string"
+          nullable: true
+        data:
+          nullable: true
+          $ref: "#/components/schemas/Object"
+    Schedule:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        event:
+          type: "string"
+          nullable: true
+        date:
+          type: "string"
+          format: "date"
+          nullable: true
+        time:
+          type: "string"
+          format: "partial-time"
+          nullable: true
+        location:
+          type: "string"
+          nullable: true
+        people:
+          type: "string"
+          nullable: true
+        priority:
+          type: "string"
+          nullable: true
+        userId:
+          type: "integer"
+          format: "int64"
+          nullable: true
+    Course:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        name:
+          type: "string"
+          nullable: true
+        dayOfWeek:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        time:
+          type: "string"
+          nullable: true
+        location:
+          type: "string"
+          nullable: true
+        teacher:
+          type: "string"
+          nullable: true
+        weeks:
+          type: "array"
+          nullable: true
+          items:
+            type: "integer"
+            format: "int32"
+        notes:
+          type: "string"
+          nullable: true
+        userId:
+          type: "integer"
+          format: "int64"
+          nullable: true
+    Note:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        title:
+          type: "string"
+          nullable: true
+        content:
+          type: "string"
+          nullable: true
+        createdAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        updatedAt:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        userId:
+          type: "integer"
+          format: "int64"
+          nullable: true
+    Reminder:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        event:
+          type: "string"
+          nullable: true
+        reminderTime:
+          type: "string"
+          format: "date-time"
+          nullable: true
+        scheduleId:
+          type: "integer"
+          format: "int64"
+          nullable: true
+        userId:
+          type: "integer"
+          format: "int64"
+          nullable: true
